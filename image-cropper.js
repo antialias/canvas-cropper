@@ -151,8 +151,8 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 		});
 		options.$dialog.dialog({
 			modal: true,
-			height: 300,
-			width: 300,
+			height: 412,
+			width: 412,
 			open: profileImageEditor.handlers.chooseProfilePictureFile,
 			autoOpen: false
 		});
