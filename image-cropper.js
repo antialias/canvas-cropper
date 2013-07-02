@@ -17,6 +17,9 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			profilePictureCenter: ko.observable({x:0,y:0})
 		};
 		profileImageEditor.handlers = {};
+		profileImageEditor.handlers.closeImageCropper = function () {
+			options.$dialog.dialog("close");
+		};
 		profileImageEditor.handlers.chooseProfilePictureFile = function () {
 			options.$dialog.find(options.chooseImageSelector).click();
 		};
