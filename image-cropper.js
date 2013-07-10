@@ -196,7 +196,7 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			});
 		});
 		options.$dialog.find(options.zoomerSelector).lpslider({
-			min: 0,
+			min: Math.log(($editorCanvas.width() - profileImageEditor.innerFrameWidth * 2) / $editorCanvas.width()),
 			max: profileImageEditor.maxZoom(),
 			step: 0.05,
 			slide: function (event, ui) {
