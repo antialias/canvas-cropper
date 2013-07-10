@@ -1,17 +1,22 @@
 define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], function (ko, lpUtils, _) {
 	$.widget( "ui.lpslider", $.ui.slider, {
 		_refresh: function () {
-			this._superApply(arguments);
-			this.sliderRight = $("<div></div>").addClass("ui-lpslider-right");
-			this.sliderLeft = $("<div></div>").addClass("ui-lpslider-left");
-			this.incrementButton = $("<div>+</div>").addClass("ui-lpslider-increment");
-			this.decrementButton = $("<div>-</div>").addClass("ui-lpslider-decrement");
-			this.element
-				.append(this.sliderRight)
-				.append(this.sliderLeft)
-				.append(this.incrementButton)
-				.append(this.decrementButton);
-			this._resizeLeftRight();
+			var sliderObj = this;
+			sliderObj._superApply(arguments);
+			sliderObj.sliderRight = $("<div>").addClass("ui-lpslider-right");
+			sliderObj.sliderLeft = $("<div>").addClass("ui-lpslider-left");
+			sliderObj.decrementButton = $("<div>").addClass("ui-lpslider-increment").data('scale', -1).text("-");
+			sliderObj.incrementButton = $("<div>").addClass("ui-lpslider-decrement").data('scale', 1).text("+");
+			sliderObj.incrementButton.add(sliderObj.decrementButton).addClass('unselectable').mousedown(function (event) {
+				event.stopPropagation();
+				sliderObj._slide(event, 0, sliderObj._trimAlignValue(sliderObj.value() + $(this).data('scale') * sliderObj.options.step));
+			});
+			sliderObj.element
+				.append(sliderObj.sliderRight)
+				.append(sliderObj.sliderLeft)
+				.append(sliderObj.incrementButton)
+				.append(sliderObj.decrementButton);
+			sliderObj._resizeLeftRight();
 		},
 		_resizeLeftRight: function() {
 			var percent = 100 * (this.option('value') - this.option('min')) / this.option('max') - this.option('min');
