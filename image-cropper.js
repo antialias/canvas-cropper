@@ -16,16 +16,15 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 				.append(sliderObj.sliderLeft)
 				.append(sliderObj.incrementButton)
 				.append(sliderObj.decrementButton);
-			sliderObj._resizeLeftRight();
 		},
-		_resizeLeftRight: function() {
+		_refreshValue: function() {
+			this._superApply(arguments);
 			var percent = 100 * (this.option('value') - this.option('min')) / (this.option('max') - this.option('min'));
+			if (!this.sliderRight || !this.sliderLeft) {
+				return;
+			}
 			this.sliderRight.css('left', percent + '%');
 			this.sliderLeft.css('right', (100  - percent) + '%');
-		},
-		_slide: function () {
-			this._superApply(arguments);
-			this._resizeLeftRight();
 		}
 	});
 	var ImageCropper = function (_options) {
@@ -35,9 +34,12 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			zoomerSelector: undefined, // selector for element that will be turned into our zoomer control
 			editorCanvasSelector: undefined // the canvas where the zoomed and cropped image will be displayed
 		}, _options);
+		var $editorCanvas = options.$dialog.find(options.editorCanvasSelector);
 		var canvasScale;
 		var restrictToNativeResolution = true;
 		var profileImageEditor = {
+			innerFrameWidth: ko.observable(20),			
+			minZoom: ko.observable(0),
 			maxZoom: ko.observable(5),
 			profileImageElem: ko.observable(new Image()),
 			profileImageURI: ko.observable(),
@@ -45,6 +47,15 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			profileZoom: ko.observable(0),
 			profilePictureCenter: ko.observable({x:0,y:0})
 		};
+		profileImageEditor.minZoom = ko.computed(function () {
+			return Math.log(($editorCanvas.width() - profileImageEditor.innerFrameWidth() * 2) / $editorCanvas.width());
+		});
+		profileImageEditor.minZoom.subscribe(function (newMinZoom) {
+			options.$dialog.find(options.zoomerSelector).lpslider("option", "min", newMinZoom);
+		});
+		profileImageEditor.maxZoom.subscribe(function (newMaxZoom) {
+			options.$dialog.find(options.zoomerSelector).lpslider("option", "max", newMaxZoom); // set max zoom to image's native resolution
+		});
 		profileImageEditor.handlers = {};
 		profileImageEditor.handlers.closeImageCropper = function () {
 			options.$dialog.dialog("close");
@@ -77,32 +88,33 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 		profileImageEditor.profileZoomExp = ko.computed(function () {
 			return Math.exp(profileImageEditor.profileZoom());
 		});
-		profileImageEditor.profileZoom.subscribe(function () {
+		profileImageEditor.profileZoom.subscribe(function (z) {
+			console.log("profile zoom:", z);
 			setUserProfilePanningCoords(true); // make sure that we don't zoom out of our boundaries
-		});
-		profileImageEditor.maxZoom.subscribe(function (newMaxZoom) {
-			options.$dialog.find(options.zoomerSelector).lpslider("option", "max", newMaxZoom); // set max zoom to image's native resolution
+			options.$dialog.find(options.zoomerSelector).lpslider("option", "value", z);
 		});
 		profileImageEditor.profileImageURI.subscribe(function (newProfileImageURI) {
 			profileImageEditor.profileImageElem().src = newProfileImageURI;
 			$(profileImageEditor.profileImageElem()).one('load', function () {
-				profileImageEditor.profilePictureCenter.valueHasMutated();
 				if (this.width >= this.height) {
 					canvasScale = profileImageEditor.__context__.canvas.width / this.width;
 				} else {
 					canvasScale = profileImageEditor.__context__.canvas.height / this.height;
 				}
 				if (restrictToNativeResolution) {
-					profileImageEditor.maxZoom(Math.max(0, Math.log(1 / canvasScale)));
+					profileImageEditor.maxZoom(Math.max(profileImageEditor.minZoom(), Math.log(1 / canvasScale)));
 				}
-				profileImageEditor.drawProfileImage();
+				profileImageEditor.profileZoom(0);
+				profileImageEditor.profilePictureCenter({x:0,y:0});
 			});
 		});
-		profileImageEditor.innerFrameWidth = 20;
 		profileImageEditor.drawProfileImage = ko.computed(function () {
 			// declare this computed's dependencies so ko will know to call this function when any of them change int he future
 			var zoom = profileImageEditor.profileZoomExp();
 			profileImageEditor.profileImageURI(); // make sure we redraw when it changes
+			profileImageEditor.maxZoom();
+			profileImageEditor.minZoom();
+			profileImageEditor.profileZoom();
 			var center = profileImageEditor.profilePictureCenter();
 			if (!profileImageEditor.__context__) {
 				return;
@@ -120,11 +132,11 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			profileImageEditor.__context__.beginPath();
 			profileImageEditor.__context__.restore();
 			profileImageEditor.__context__.rect(
-				profileImageEditor.innerFrameWidth / 2, profileImageEditor.innerFrameWidth / 2,
-				profileImageEditor.__context__.canvas.width - profileImageEditor.innerFrameWidth,
-				profileImageEditor.__context__.canvas.height - profileImageEditor.innerFrameWidth
+				profileImageEditor.innerFrameWidth() / 2, profileImageEditor.innerFrameWidth() / 2,
+				profileImageEditor.__context__.canvas.width - profileImageEditor.innerFrameWidth(),
+				profileImageEditor.__context__.canvas.height - profileImageEditor.innerFrameWidth()
 			);
-			profileImageEditor.__context__.lineWidth = profileImageEditor.innerFrameWidth;
+			profileImageEditor.__context__.lineWidth = profileImageEditor.innerFrameWidth();
 			profileImageEditor.__context__.strokeStyle = "rgba(100,100,100,0.5)";
 			profileImageEditor.__context__.stroke();
 			profileImageEditor.__context__.closePath();
@@ -144,8 +156,8 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 				setUserProfilePanningCoords.lastCoords = profileImageEditor.profilePictureCenter();
 			}
 			var scale = 1 / (canvasScale * profileImageEditor.profileZoomExp()),
-				viewerHeightDifference = ((profileImageEditor.__context__.canvas.height - 2*profileImageEditor.innerFrameWidth) * scale  - profileImageEditor.profileImageElem().height) / 2,
-				viewerWidthDifference = ((profileImageEditor.__context__.canvas.width - 2*profileImageEditor.innerFrameWidth) * scale  - profileImageEditor.profileImageElem().width) / 2,
+				viewerHeightDifference = ((profileImageEditor.__context__.canvas.height - 2*profileImageEditor.innerFrameWidth()) * scale  - profileImageEditor.profileImageElem().height) / 2,
+				viewerWidthDifference = ((profileImageEditor.__context__.canvas.width - 2*profileImageEditor.innerFrameWidth()) * scale  - profileImageEditor.profileImageElem().width) / 2,
 				newCoords = {x:profileImageEditor.profilePictureCenter().x + dX * scale, y: profileImageEditor.profilePictureCenter().y + dY * scale},
 			    xAdjustCount = 0,
 				yAdjustCount = 0;
@@ -178,7 +190,6 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			}
 			profileImageEditor.profilePictureCenter(newCoords);
 		};
-		var $editorCanvas = options.$dialog.find(options.editorCanvasSelector);
 		$editorCanvas.pointerLock({
 			movement: setUserProfilePanningCoords
 		});
@@ -196,9 +207,12 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			});
 		});
 		options.$dialog.find(options.zoomerSelector).lpslider({
-			min: Math.log(($editorCanvas.width() - profileImageEditor.innerFrameWidth * 2) / $editorCanvas.width()),
+			min: profileImageEditor.minZoom(),
 			max: profileImageEditor.maxZoom(),
 			step: 0.05,
+			change: function (event, ui) {
+				profileImageEditor.profileZoom(ui.value);
+			},
 			slide: function (event, ui) {
 				profileImageEditor.profileZoom(ui.value);
 			}
