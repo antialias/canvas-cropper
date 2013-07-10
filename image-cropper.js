@@ -117,17 +117,17 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 				profileImageEditor.profileImageElem().width,
 				profileImageEditor.profileImageElem().height);
 			profileImageEditor.__context__.beginPath();
-			profileImageEditor.__context__.rect(
-				profileImageEditor.__context__.canvas.width / canvasScale / -2 / zoom,
-				profileImageEditor.__context__.canvas.height / canvasScale / -2 / zoom,
-				profileImageEditor.__context__.canvas.width / canvasScale / zoom,
-				profileImageEditor.__context__.canvas.height / canvasScale / zoom
-			);
-		    profileImageEditor.__context__.lineWidth = 10 / zoom;
-		    profileImageEditor.__context__.strokeStyle = 'yellow';
-		    profileImageEditor.__context__.stroke();
-		    profileImageEditor.__context__.closePath();
 			profileImageEditor.__context__.restore();
+			var innerFrameWidth = 20;
+			profileImageEditor.__context__.rect(
+				innerFrameWidth / 2, innerFrameWidth / 2,
+				profileImageEditor.__context__.canvas.width - innerFrameWidth,
+				profileImageEditor.__context__.canvas.height - innerFrameWidth
+			);
+			profileImageEditor.__context__.lineWidth = innerFrameWidth;
+			profileImageEditor.__context__.strokeStyle = "rgba(100,100,100,0.5)";
+			profileImageEditor.__context__.stroke();
+			profileImageEditor.__context__.closePath();
 		});
 		var setUserProfilePanningCoords = function () {
 			var dX = 0, dY = 0, zoomToLast = false;
