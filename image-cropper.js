@@ -4,8 +4,8 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			this._superApply(arguments);
 			this.sliderRight = $("<div></div>").addClass("ui-lpslider-right");
 			this.sliderLeft = $("<div></div>").addClass("ui-lpslider-left");
-			this.incrementButton = $("<div></div>").addClass("ui-lpslider-increment");
-			this.decrementButton = $("<div></div>").addClass("ui-lpslider-decrement");
+			this.incrementButton = $("<div>+</div>").addClass("ui-lpslider-increment");
+			this.decrementButton = $("<div>-</div>").addClass("ui-lpslider-decrement");
 			this.element
 				.append(this.sliderRight)
 				.append(this.sliderLeft)
