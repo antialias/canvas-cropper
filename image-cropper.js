@@ -144,8 +144,8 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 				setUserProfilePanningCoords.lastCoords = profileImageEditor.profilePictureCenter();
 			}
 			var scale = 1 / (canvasScale * profileImageEditor.profileZoomExp()),
-				viewerHeightDifference = (profileImageEditor.__context__.canvas.height * scale  - profileImageEditor.profileImageElem().height) / 2,
-				viewerWidthDifference = (profileImageEditor.__context__.canvas.width * scale  - profileImageEditor.profileImageElem().width) / 2,
+				viewerHeightDifference = ((profileImageEditor.__context__.canvas.height - 2*profileImageEditor.innerFrameWidth) * scale  - profileImageEditor.profileImageElem().height) / 2,
+				viewerWidthDifference = ((profileImageEditor.__context__.canvas.width - 2*profileImageEditor.innerFrameWidth) * scale  - profileImageEditor.profileImageElem().width) / 2,
 				newCoords = {x:profileImageEditor.profilePictureCenter().x + dX * scale, y: profileImageEditor.profilePictureCenter().y + dY * scale},
 			    xAdjustCount = 0,
 				yAdjustCount = 0;
