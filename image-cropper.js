@@ -19,7 +19,7 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			sliderObj._resizeLeftRight();
 		},
 		_resizeLeftRight: function() {
-			var percent = 100 * (this.option('value') - this.option('min')) / this.option('max') - this.option('min');
+			var percent = 100 * (this.option('value') - this.option('min')) / (this.option('max') - this.option('min'));
 			this.sliderRight.css('left', percent + '%');
 			this.sliderLeft.css('right', (100  - percent) + '%');
 		},
