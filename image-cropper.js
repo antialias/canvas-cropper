@@ -89,7 +89,6 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			return Math.exp(profileImageEditor.profileZoom());
 		});
 		profileImageEditor.profileZoom.subscribe(function (z) {
-			console.log("profile zoom:", z);
 			setUserProfilePanningCoords(true); // make sure that we don't zoom out of our boundaries
 			options.$dialog.find(options.zoomerSelector).lpslider("option", "value", z);
 		});
