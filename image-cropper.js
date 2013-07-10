@@ -98,6 +98,7 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 				profileImageEditor.drawProfileImage();
 			});
 		});
+		profileImageEditor.innerFrameWidth = 20;
 		profileImageEditor.drawProfileImage = ko.computed(function () {
 			// declare this computed's dependencies so ko will know to call this function when any of them change int he future
 			var zoom = profileImageEditor.profileZoomExp();
@@ -118,13 +119,12 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 				profileImageEditor.profileImageElem().height);
 			profileImageEditor.__context__.beginPath();
 			profileImageEditor.__context__.restore();
-			var innerFrameWidth = 20;
 			profileImageEditor.__context__.rect(
-				innerFrameWidth / 2, innerFrameWidth / 2,
-				profileImageEditor.__context__.canvas.width - innerFrameWidth,
-				profileImageEditor.__context__.canvas.height - innerFrameWidth
+				profileImageEditor.innerFrameWidth / 2, profileImageEditor.innerFrameWidth / 2,
+				profileImageEditor.__context__.canvas.width - profileImageEditor.innerFrameWidth,
+				profileImageEditor.__context__.canvas.height - profileImageEditor.innerFrameWidth
 			);
-			profileImageEditor.__context__.lineWidth = innerFrameWidth;
+			profileImageEditor.__context__.lineWidth = profileImageEditor.innerFrameWidth;
 			profileImageEditor.__context__.strokeStyle = "rgba(100,100,100,0.5)";
 			profileImageEditor.__context__.stroke();
 			profileImageEditor.__context__.closePath();
