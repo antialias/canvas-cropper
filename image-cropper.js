@@ -1,4 +1,28 @@
 define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], function (ko, lpUtils, _) {
+	$.widget( "ui.lpslider", $.ui.slider, {
+		_refresh: function () {
+			this._superApply(arguments);
+			this.sliderRight = $("<div></div>").addClass("ui-lpslider-right");
+			this.sliderLeft = $("<div></div>").addClass("ui-lpslider-left");
+			this.incrementButton = $("<div></div>").addClass("ui-lpslider-increment");
+			this.decrementButton = $("<div></div>").addClass("ui-lpslider-decrement");
+			this.element
+				.append(this.sliderRight)
+				.append(this.sliderLeft)
+				.append(this.incrementButton)
+				.append(this.decrementButton);
+			this._resizeLeftRight();
+		},
+		_resizeLeftRight: function() {
+			var percent = 100 * (this.option('value') - this.option('min')) / this.option('max') - this.option('min');
+			this.sliderRight.css('left', percent + '%');
+			this.sliderLeft.css('right', (100  - percent) + '%');
+		},
+		_slide: function () {
+			this._superApply(arguments);
+			this._resizeLeftRight();
+		}
+	});
 	var ImageCropper = function (_options) {
 		var options = $.extend({
 			$dialog: undefined, // the element where our canvas, slider, and file chooser are
@@ -52,7 +76,7 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			setUserProfilePanningCoords(true); // make sure that we don't zoom out of our boundaries
 		});
 		profileImageEditor.maxZoom.subscribe(function (newMaxZoom) {
-			options.$dialog.find(options.zoomerSelector).slider("option", "max", newMaxZoom); // set max zoom to image's native resolution
+			options.$dialog.find(options.zoomerSelector).lpslider("option", "max", newMaxZoom); // set max zoom to image's native resolution
 		});
 		profileImageEditor.profileImageURI.subscribe(function (newProfileImageURI) {
 			profileImageEditor.profileImageElem().src = newProfileImageURI;
@@ -165,7 +189,7 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 				height: $(this).height()
 			});
 		});
-		options.$dialog.find(options.zoomerSelector).slider({
+		options.$dialog.find(options.zoomerSelector).lpslider({
 			min: 0,
 			max: profileImageEditor.maxZoom(),
 			step: 0.05,
