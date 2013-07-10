@@ -178,7 +178,8 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			}
 			profileImageEditor.profilePictureCenter(newCoords);
 		};
-		options.$dialog.find(options.editorCanvasSelector).pointerLock({
+		var $editorCanvas = options.$dialog.find(options.editorCanvasSelector);
+		$editorCanvas.pointerLock({
 			movement: setUserProfilePanningCoords
 		});
 		options.$dialog.dialog({
@@ -188,7 +189,7 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			open: profileImageEditor.handlers.chooseProfilePictureFile,
 			autoOpen: false
 		});
-		options.$dialog.find(options.editorCanvasSelector).each(function () {
+		$editorCanvas.each(function () {
 			$(this).attr({
 				width: $(this).width(),
 				height: $(this).height()
