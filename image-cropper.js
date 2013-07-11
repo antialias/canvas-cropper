@@ -64,16 +64,28 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			options.$dialog.find(options.chooseImageSelector).click();
 		};
 		profileImageEditor.handlers.saveProfilePicture = function () {
-			var imageURL = profileImageEditor.__context__.canvas.toDataURL("image/jpeg", 0.8);
+			// use another canvas to crop out the frame around the image
+			var insideFrame = $("<canvas>").attr({
+				width: profileImageEditor.__context__.canvas.width - 2*profileImageEditor.innerFrameWidth(),
+				height: profileImageEditor.__context__.canvas.height - 2*profileImageEditor.innerFrameWidth()
+			}).get(0);
+			var insideFrameContext = insideFrame.getContext("2d");
+			insideFrameContext.drawImage(
+				profileImageEditor.__context__.canvas,
+				-profileImageEditor.innerFrameWidth(),
+				-profileImageEditor.innerFrameWidth(),
+				profileImageEditor.__context__.canvas.width,
+				profileImageEditor.__context__.canvas.height
+			);
+			var imageURL = insideFrame.toDataURL("image/jpeg", 0.8);
 			// TODO: I think imageblob isnt' getting constructed properly
 			var imageBlob = lpUtils.dataURItoBlob(imageURL);
-			console.log(imageBlob);
 			var fd = new FormData();
 			fd.append('fname', 'profileImageUpload.jpg');
 			fd.append('data', imageBlob);
 			$.ajax({
 				type: 'POST',
-				url: "/users/uploadProfileImage",
+				url: "/avatar/",
 				data: fd,
 				processData: false,
 				contentType: false,
