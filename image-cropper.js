@@ -96,7 +96,7 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 				processData: false,
 				contentType: false,
 				success: function (result) {
-					console.log("success!", result);
+					options.$dialog.dialog("close");
 				},
 				error: function () {
 					console.log("failure :(");
@@ -260,6 +260,7 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			movement: setUserProfilePanningCoords
 		});
 		options.$dialog.dialog({
+			hide: {effect: 'fade', duration: 200},
 			modal: true,
 			height: 412,
 			width: 360,
