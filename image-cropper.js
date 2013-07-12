@@ -105,6 +105,7 @@ _) {
 				processData: false,
 				contentType: false,
 				success: function (result) {
+					menubar.avatarHasChanged();
 					options.$dialog.dialog("close");
 				},
 				error: function () {
@@ -273,7 +274,11 @@ _) {
 			modal: true,
 			height: 412,
 			width: 360,
-			open: profileImageEditor.handlers.chooseProfilePictureFile,
+			open: function () {
+				if (!profileImageEditor.profileImageFile()) {
+					profileImageEditor.handlers.chooseProfilePictureFile();
+				}
+			},
 			autoOpen: false
 		});
 		$editorCanvas.each(function () {
