@@ -100,7 +100,7 @@ _) {
 			fd.append('data', imageBlob);
 			$.ajax({
 				type: 'POST',
-				url: "/avatar/",
+				url: "/avatar/large",
 				data: fd,
 				processData: false,
 				contentType: false,
