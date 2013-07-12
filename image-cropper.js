@@ -39,12 +39,11 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 		var restrictToNativeResolution = true;
 		var profileImageEditor = {
 			innerFrameWidth: ko.observable(20),			
-			minZoom: ko.observable(0),
-			maxZoom: ko.observable(5),
+			maxZoom: ko.observable(),
 			profileImageElem: ko.observable(new Image()),
 			profileImageURI: ko.observable(),
 			profileImageFile: ko.observable(false),
-			profileZoom: ko.observable(0),
+			profileZoom: ko.observable(),
 			profilePictureCenter: ko.observable({x:0,y:0})
 		};
 		profileImageEditor.minZoom = ko.computed(function () {
@@ -52,6 +51,12 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 		});
 		profileImageEditor.minZoom.subscribe(function (newMinZoom) {
 			options.$dialog.find(options.zoomerSelector).lpslider("option", "min", newMinZoom);
+		});
+		profileImageEditor.sliderStep = ko.computed(function () {
+			return (profileImageEditor.maxZoom() - profileImageEditor.minZoom()) / 40;
+		});
+		profileImageEditor.sliderStep.subscribe(function (newSliderStep) {
+			options.$dialog.find(options.zoomerSelector).lpslider("option", "step", newSliderStep);
 		});
 		profileImageEditor.maxZoom.subscribe(function (newMaxZoom) {
 			options.$dialog.find(options.zoomerSelector).lpslider("option", "max", newMaxZoom); // set max zoom to image's native resolution
@@ -142,17 +147,57 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 				profileImageEditor.profileImageElem().height);
 			profileImageEditor.__context__.beginPath();
 			profileImageEditor.__context__.restore();
-			var frameShowWidth = profileImageEditor.innerFrameWidth() * (profileImageEditor.minZoom() - profileImageEditor.profileZoom()) / profileImageEditor.minZoom();
-			profileImageEditor.__context__.rect(
-				profileImageEditor.innerFrameWidth() - frameShowWidth,
-				profileImageEditor.innerFrameWidth() - frameShowWidth,
-				profileImageEditor.__context__.canvas.width - 2 * profileImageEditor.innerFrameWidth() + 2 * frameShowWidth,
-				profileImageEditor.__context__.canvas.height - 2 * profileImageEditor.innerFrameWidth() + 2 * frameShowWidth
-			);
+			var frameShowWidth = Math.min(profileImageEditor.innerFrameWidth(), profileImageEditor.innerFrameWidth() * (profileImageEditor.minZoom() - profileImageEditor.profileZoom()) / profileImageEditor.minZoom());
+			var blurEncroachment = Math.max(profileImageEditor.innerFrameWidth() / 2, Math.max(0,profileImageEditor.innerFrameWidth() - frameShowWidth));
+			profileImageEditor.__context__.save();
 			profileImageEditor.__context__.lineWidth = 2 * frameShowWidth;
 			profileImageEditor.__context__.strokeStyle = "rgba(100,100,100,0.5)";
-			profileImageEditor.__context__.stroke();
-			profileImageEditor.__context__.closePath();
+			if (frameShowWidth > 0) {
+				profileImageEditor.__context__.strokeRect(
+					profileImageEditor.innerFrameWidth() - frameShowWidth,
+					profileImageEditor.innerFrameWidth() - frameShowWidth,
+					profileImageEditor.__context__.canvas.width - 2 * profileImageEditor.innerFrameWidth() + 2 * frameShowWidth,
+					profileImageEditor.__context__.canvas.height - 2 * profileImageEditor.innerFrameWidth() + 2 * frameShowWidth
+				);
+				profileImageEditor.__context__.closePath();
+			}
+			profileImageEditor.__context__.restore();
+			profileImageEditor.__context__.save();
+			profileImageEditor.__context__.shadowColor = "rgb(255,255,255)";
+			profileImageEditor.__context__.shadowOffsetX = blurEncroachment;
+			profileImageEditor.__context__.shadowOffsetY = blurEncroachment;
+			profileImageEditor.__context__.lineWidth = 0;
+			profileImageEditor.__context__.fillStyle = "rgba(0,0,0,1)";
+			profileImageEditor.__context__.shadowBlur = Math.min(profileImageEditor.innerFrameWidth() / 2, frameShowWidth);
+			profileImageEditor.__context__.rect(
+				-100,
+				-blurEncroachment * 2,
+				100,
+				profileImageEditor.__context__.canvas.height + blurEncroachment * 4
+			);
+			profileImageEditor.__context__.rect(
+				-blurEncroachment * 2,
+				-100,
+				profileImageEditor.__context__.canvas.width + blurEncroachment * 4,
+				100
+			);
+			profileImageEditor.__context__.fill();
+			profileImageEditor.__context__.shadowOffsetX = -blurEncroachment;
+			profileImageEditor.__context__.shadowOffsetY = -blurEncroachment;
+			profileImageEditor.__context__.rect(
+				profileImageEditor.__context__.canvas.width,
+				-blurEncroachment * 2,
+				100,
+				profileImageEditor.__context__.canvas.height + blurEncroachment * 4
+			);
+			profileImageEditor.__context__.rect(
+				-blurEncroachment * 2,
+				profileImageEditor.__context__.canvas.height,
+				profileImageEditor.__context__.canvas.width + blurEncroachment * 4,
+				100
+			);
+			profileImageEditor.__context__.fill();
+			profileImageEditor.__context__.restore();
 		});
 		var setUserProfilePanningCoords = function () {
 			var dX = 0, dY = 0, zoomToLast = false;
@@ -221,8 +266,6 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 		});
 		options.$dialog.find(options.zoomerSelector).lpslider({
 			min: profileImageEditor.minZoom(),
-			max: profileImageEditor.maxZoom(),
-			step: 0.05,
 			change: function (event, ui) {
 				profileImageEditor.profileZoom(ui.value);
 			},
