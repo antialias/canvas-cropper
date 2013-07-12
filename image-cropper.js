@@ -115,7 +115,7 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 				if (restrictToNativeResolution) {
 					profileImageEditor.maxZoom(Math.max(profileImageEditor.minZoom(), Math.log(1 / canvasScale)));
 				}
-				profileImageEditor.profileZoom(0);
+				profileImageEditor.profileZoom(profileImageEditor.minZoom());
 				profileImageEditor.profilePictureCenter({x:0,y:0});
 			});
 		});
