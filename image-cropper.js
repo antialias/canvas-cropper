@@ -38,6 +38,7 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 		var canvasScale;
 		var restrictToNativeResolution = true;
 		var profileImageEditor = {
+			preview: ko.observable(false),
 			innerFrameWidth: ko.observable(20),			
 			maxZoom: ko.observable(),
 			profileImageElem: ko.observable(new Image()),
@@ -151,7 +152,11 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			var blurEncroachment = Math.max(profileImageEditor.innerFrameWidth() / 2, Math.max(0,profileImageEditor.innerFrameWidth() - frameShowWidth));
 			profileImageEditor.__context__.save();
 			profileImageEditor.__context__.lineWidth = 2 * frameShowWidth;
-			profileImageEditor.__context__.strokeStyle = "rgba(100,100,100,0.5)";
+			if (profileImageEditor.preview()) {
+				profileImageEditor.__context__.strokeStyle = "rgb(255,255,255)";
+			} else {
+				profileImageEditor.__context__.strokeStyle = "rgba(100,100,100,0.5)";
+			}
 			if (frameShowWidth > 0) {
 				profileImageEditor.__context__.strokeRect(
 					profileImageEditor.innerFrameWidth() - frameShowWidth,
@@ -162,6 +167,9 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 				profileImageEditor.__context__.closePath();
 			}
 			profileImageEditor.__context__.restore();
+			if (profileImageEditor.preview()) {
+				return;
+			}
 			profileImageEditor.__context__.save();
 			profileImageEditor.__context__.shadowColor = "rgb(255,255,255)";
 			profileImageEditor.__context__.shadowOffsetX = blurEncroachment;
@@ -279,6 +287,7 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 			}
 		};
 		ko.applyBindings(profileImageEditor, options.$dialog.get(0));
+		this.vm = profileImageEditor;
 	};
 	return ImageCropper;
 });
