@@ -142,12 +142,14 @@ define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], functi
 				profileImageEditor.profileImageElem().height);
 			profileImageEditor.__context__.beginPath();
 			profileImageEditor.__context__.restore();
+			var frameShowWidth = profileImageEditor.innerFrameWidth() * (profileImageEditor.minZoom() - profileImageEditor.profileZoom()) / profileImageEditor.minZoom();
 			profileImageEditor.__context__.rect(
-				profileImageEditor.innerFrameWidth() / 2, profileImageEditor.innerFrameWidth() / 2,
-				profileImageEditor.__context__.canvas.width - profileImageEditor.innerFrameWidth(),
-				profileImageEditor.__context__.canvas.height - profileImageEditor.innerFrameWidth()
+				profileImageEditor.innerFrameWidth() - frameShowWidth,
+				profileImageEditor.innerFrameWidth() - frameShowWidth,
+				profileImageEditor.__context__.canvas.width - 2 * profileImageEditor.innerFrameWidth() + 2 * frameShowWidth,
+				profileImageEditor.__context__.canvas.height - 2 * profileImageEditor.innerFrameWidth() + 2 * frameShowWidth
 			);
-			profileImageEditor.__context__.lineWidth = profileImageEditor.innerFrameWidth();
+			profileImageEditor.__context__.lineWidth = 2 * frameShowWidth;
 			profileImageEditor.__context__.strokeStyle = "rgba(100,100,100,0.5)";
 			profileImageEditor.__context__.stroke();
 			profileImageEditor.__context__.closePath();
