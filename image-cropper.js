@@ -1,4 +1,13 @@
-define(['knockout', '/js/lp/lib/utils.js', '/js/ko-bindings/ko.file.js'], function (ko, lpUtils, _) {
+define([
+	'knockout',
+	'/js/lp/lib/utils.js',
+	'/js/pod.menubar.js',
+	'/js/ko-bindings/ko.file.js'
+], function (
+	ko,
+	lpUtils,
+	menubar,
+_) {
 	$.widget( "ui.lpslider", $.ui.slider, {
 		_refresh: function () {
 			var sliderObj = this;
