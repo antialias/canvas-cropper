@@ -78,7 +78,11 @@ _) {
 		profileImageEditor.handlers.chooseProfilePictureFile = function () {
 			options.$dialog.find(options.chooseImageSelector).click();
 		};
+		var imageCropper = this;
 		profileImageEditor.handlers.saveProfilePicture = function () {
+			options.save(imageCropper.croppedImageDataUrl());
+		};
+		this.croppedImageDataUrl = function () {
 			// use another canvas to crop out the frame around the image
 			var insideFrame = $("<canvas>").attr({
 				width: profileImageEditor.__context__.canvas.width - 2*profileImageEditor.innerFrameWidth(),
@@ -92,26 +96,12 @@ _) {
 				profileImageEditor.__context__.canvas.width,
 				profileImageEditor.__context__.canvas.height
 			);
-			var imageURL = insideFrame.toDataURL("image/jpeg", 0.8);
-			// TODO: I think imageblob isnt' getting constructed properly
+			return insideFrame.toDataURL("image/jpeg", 0.8);
+		};
+		this.imageAsBlob = function () {
+			var imageURL = imageCropper.croppedImageDataUrl();
 			var imageBlob = lpUtils.dataURItoBlob(imageURL);
-			var fd = new FormData();
-			fd.append('fname', 'profileImageUpload.jpg');
-			fd.append('data', imageBlob);
-			$.ajax({
-				type: 'POST',
-				url: "/avatar/large",
-				data: fd,
-				processData: false,
-				contentType: false,
-				success: function (result) {
-					menubar.avatarHasChanged();
-					options.$dialog.dialog("close");
-				},
-				error: function () {
-					console.log("failure :(");
-				}
-			});
+			return imageBlob;
 		};
 		profileImageEditor.profileZoomExp = ko.computed(function () {
 			return Math.exp(profileImageEditor.profileZoom());
