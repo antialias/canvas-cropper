@@ -2,12 +2,14 @@ define([
 	'knockout',
 	'/js/lp/lib/utils.js',
 	'/js/pod.menubar.js',
+	'/js/jquery-plugins/jquery.naturalImageSizes.js',
+	'/js/jquery-plugins/jquery.pointerlock.js',
 	'/js/ko-bindings/ko.file.js'
 ], function (
 	ko,
 	lpUtils,
 	menubar,
-_) {
+_, _, _) {
 	$.widget( "ui.lpslider", $.ui.slider, {
 		_refresh: function () {
 			var sliderObj = this;
