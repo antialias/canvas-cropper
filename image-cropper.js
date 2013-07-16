@@ -63,7 +63,7 @@ _) {
 			options.$dialog.find(options.zoomerSelector).lpslider("option", "min", newMinZoom);
 		});
 		profileImageEditor.sliderStep = ko.computed(function () {
-			return (profileImageEditor.maxZoom() - profileImageEditor.minZoom()) / 40;
+			return (profileImageEditor.maxZoom() - profileImageEditor.minZoom()) / 100;
 		});
 		profileImageEditor.sliderStep.subscribe(function (newSliderStep) {
 			options.$dialog.find(options.zoomerSelector).lpslider("option", "step", newSliderStep);
