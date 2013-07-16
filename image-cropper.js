@@ -115,10 +115,11 @@ _, _, _) {
 		profileImageEditor.profileImageURI.subscribe(function (newProfileImageURI) {
 			profileImageEditor.profileImageElem().src = newProfileImageURI;
 			$(profileImageEditor.profileImageElem()).one('load', function () {
-				if (this.width >= this.height) {
-					canvasScale = profileImageEditor.__context__.canvas.width / this.width;
+				var $this = $(this);
+				if ($this.naturalWidth() >= $this.naturalHeight()) {
+					canvasScale = profileImageEditor.__context__.canvas.width / $this.naturalWidth();
 				} else {
-					canvasScale = profileImageEditor.__context__.canvas.height / this.height;
+					canvasScale = profileImageEditor.__context__.canvas.height / $this.naturalHeight();
 				}
 				if (restrictToNativeResolution) {
 					profileImageEditor.maxZoom(Math.max(profileImageEditor.minZoom(), Math.log(1 / canvasScale)));
@@ -144,10 +145,10 @@ _, _, _) {
 			profileImageEditor.__context__.scale(canvasScale, canvasScale);
 			profileImageEditor.__context__.scale(zoom, zoom);
 			profileImageEditor.__context__.drawImage(profileImageEditor.profileImageElem(),
-				center.x + profileImageEditor.profileImageElem().width / -2,
-				center.y + profileImageEditor.profileImageElem().height / -2,
-				profileImageEditor.profileImageElem().width,
-				profileImageEditor.profileImageElem().height);
+				center.x + $(profileImageEditor.profileImageElem()).naturalWidth() / -2,
+				center.y + $(profileImageEditor.profileImageElem()).naturalHeight() / -2,
+				$(profileImageEditor.profileImageElem()).naturalWidth(),
+				$(profileImageEditor.profileImageElem()).naturalHeight());
 			profileImageEditor.__context__.beginPath();
 			profileImageEditor.__context__.restore();
 			var frameShowWidth = Math.min(profileImageEditor.innerFrameWidth(), profileImageEditor.innerFrameWidth() * (profileImageEditor.minZoom() - profileImageEditor.profileZoom()) / profileImageEditor.minZoom());
@@ -224,8 +225,8 @@ _, _, _) {
 				setUserProfilePanningCoords.lastCoords = profileImageEditor.profilePictureCenter();
 			}
 			var scale = 1 / (canvasScale * profileImageEditor.profileZoomExp()),
-				viewerHeightDifference = ((profileImageEditor.__context__.canvas.height - 2*profileImageEditor.innerFrameWidth()) * scale  - profileImageEditor.profileImageElem().height) / 2,
-				viewerWidthDifference = ((profileImageEditor.__context__.canvas.width - 2*profileImageEditor.innerFrameWidth()) * scale  - profileImageEditor.profileImageElem().width) / 2,
+				viewerHeightDifference = ((profileImageEditor.__context__.canvas.height - 2*profileImageEditor.innerFrameWidth()) * scale  - $(profileImageEditor.profileImageElem()).naturalHeight()) / 2,
+				viewerWidthDifference = ((profileImageEditor.__context__.canvas.width - 2*profileImageEditor.innerFrameWidth()) * scale  - $(profileImageEditor.profileImageElem()).naturalWidth()) / 2,
 				newCoords = {x:profileImageEditor.profilePictureCenter().x + dX * scale, y: profileImageEditor.profilePictureCenter().y + dY * scale},
 			    xAdjustCount = 0,
 				yAdjustCount = 0;
