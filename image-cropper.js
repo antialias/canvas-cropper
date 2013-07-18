@@ -113,6 +113,9 @@ _, _, _) {
 			options.$dialog.find(options.zoomerSelector).lpslider("option", "value", z);
 		});
 		profileImageEditor.profileImageURI.subscribe(function (newProfileImageURI) {
+			debugger;
+			options.$dialog.dialog("open");
+			console.log("profile image uri was set to:" + newProfileImageURI);
 			profileImageEditor.profileImageElem().src = newProfileImageURI;
 			$(profileImageEditor.profileImageElem()).one('load', function () {
 				var $this = $(this);
@@ -267,11 +270,6 @@ _, _, _) {
 			modal: true,
 			height: 412,
 			width: 360,
-			open: function () {
-				if (!profileImageEditor.profileImageFile()) {
-					profileImageEditor.handlers.chooseProfilePictureFile();
-				}
-			},
 			autoOpen: false
 		});
 		$editorCanvas.each(function () {
