@@ -84,6 +84,18 @@ _, _, _) {
 		profileImageEditor.handlers.saveProfilePicture = function () {
 			options.save(imageCropper.croppedImageDataUrl());
 		};
+		this.getCroppingCoordinatesAsCSV = function () {
+			var zoom = profileImageEditor.profileZoomExp();
+			var wh = zoom * canvasScale * ($(profileImageEditor.profileImageElem()).naturalWidth())
+			var tl = profileImageEditor.profilePictureCenter();
+			wh = wh / 2;
+			return [
+				Math.floor($(profileImageEditor.profileImageElem()).naturalWidth() / 2 - tl.x - wh),
+				Math.floor($(profileImageEditor.profileImageElem()).naturalHeight() / 2 - tl.y - wh),
+				Math.floor(wh * 2),
+				Math.floor(wh * 2)
+			].join(',');
+		};
 		this.croppedImageDataUrl = function () {
 			// use another canvas to crop out the frame around the image
 			var insideFrame = $("<canvas>").attr({
@@ -112,10 +124,11 @@ _, _, _) {
 			setUserProfilePanningCoords(true); // make sure that we don't zoom out of our boundaries
 			options.$dialog.find(options.zoomerSelector).lpslider("option", "value", z);
 		});
+		var stillInitializing = true;
 		profileImageEditor.profileImageURI.subscribe(function (newProfileImageURI) {
-			debugger;
-			options.$dialog.dialog("open");
-			console.log("profile image uri was set to:" + newProfileImageURI);
+			if (!stillInitializing) {
+				options.$dialog.dialog("open");
+			}
 			profileImageEditor.profileImageElem().src = newProfileImageURI;
 			$(profileImageEditor.profileImageElem()).one('load', function () {
 				var $this = $(this);
@@ -293,6 +306,7 @@ _, _, _) {
 			}
 		};
 		ko.applyBindings(profileImageEditor, options.$dialog.get(0));
+		stillInitializing = false;
 		this.vm = profileImageEditor;
 	};
 	return ImageCropper;
