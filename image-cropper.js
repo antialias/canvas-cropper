@@ -129,6 +129,9 @@ _, __, ___) {
 			if (!stillInitializing) {
 				options.$dialog.dialog("open");
 			}
+			if (!newProfileImageURI) {
+				return;
+			}
 			profileImageEditor.profileImageElem().src = newProfileImageURI;
 			$(profileImageEditor.profileImageElem()).one('load', function () {
 				var $this = $(this);
