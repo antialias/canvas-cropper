@@ -102,6 +102,9 @@ _, __, ___) {
 				width: profileImageEditor.__context__.canvas.width - 2*profileImageEditor.innerFrameWidth(),
 				height: profileImageEditor.__context__.canvas.height - 2*profileImageEditor.innerFrameWidth()
 			}).get(0);
+			if (!insideFrame.getContext) {
+				return undefined;
+			}
 			var insideFrameContext = insideFrame.getContext("2d");
 			insideFrameContext.drawImage(
 				profileImageEditor.__context__.canvas,
@@ -302,6 +305,9 @@ _, __, ___) {
 		});
 		ko.bindingHandlers.draw = {
 			init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+				if (!element.getContext) {
+					return;
+				}
 				viewModel.__context__ = element.getContext("2d");
 			}
 		};
