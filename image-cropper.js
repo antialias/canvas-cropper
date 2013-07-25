@@ -9,7 +9,7 @@ define([
 	ko,
 	lpUtils,
 	menubar,
-_, _, _) {
+_, __, ___) {
 	$.widget( "ui.lpslider", $.ui.slider, {
 		_refresh: function () {
 			var sliderObj = this;
@@ -86,7 +86,7 @@ _, _, _) {
 		};
 		this.getCroppingCoordinatesAsCSV = function () {
 			var zoom = profileImageEditor.profileZoomExp();
-			var wh = zoom * canvasScale * ($(profileImageEditor.profileImageElem()).naturalWidth())
+			var wh = zoom * canvasScale * ($(profileImageEditor.profileImageElem()).naturalWidth());
 			var tl = profileImageEditor.profilePictureCenter();
 			wh = wh / 2;
 			return [
@@ -131,6 +131,9 @@ _, _, _) {
 		profileImageEditor.profileImageURI.subscribe(function (newProfileImageURI) {
 			if (!stillInitializing) {
 				options.$dialog.dialog("open");
+			}
+			if (!newProfileImageURI) {
+				return;
 			}
 			profileImageEditor.profileImageElem().src = newProfileImageURI;
 			$(profileImageEditor.profileImageElem()).one('load', function () {
