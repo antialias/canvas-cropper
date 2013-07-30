@@ -85,15 +85,22 @@ _, __, ___) {
 			options.save(imageCropper.croppedImageDataUrl());
 		};
 		this.getCroppingCoordinatesAsCSV = function () {
-			var zoom = profileImageEditor.profileZoomExp();
-			var wh = zoom * canvasScale * ($(profileImageEditor.profileImageElem()).naturalWidth());
-			var tl = profileImageEditor.profilePictureCenter();
-			wh = wh / 2;
+			if (!profileImageEditor.profileZoomExp()) {
+				return false;
+			}
+			if (!canvasScale) {
+				return false;
+			}
+			var boxWidth = profileImageEditor.__context__.canvas.width / (profileImageEditor.profileZoomExp() * canvasScale);
+			var center = profileImageEditor.profilePictureCenter();
+			centerX = center.x + $(profileImageEditor.profileImageElem()).naturalWidth() / 2;
+			centerY = center.y + $(profileImageEditor.profileImageElem()).naturalHeight() / 2;
+			console.log(center);
 			return [
-				Math.floor($(profileImageEditor.profileImageElem()).naturalWidth() / 2 - tl.x - wh),
-				Math.floor($(profileImageEditor.profileImageElem()).naturalHeight() / 2 - tl.y - wh),
-				Math.floor(wh * 2),
-				Math.floor(wh * 2)
+				centerX - boxWidth / 2,
+				centerX - boxWidth / 2,
+				Math.floor(boxWidth),
+				Math.floor(boxWidth)
 			].join(',');
 		};
 		this.croppedImageDataUrl = function () {
@@ -171,6 +178,11 @@ _, __, ___) {
 				center.y + $(profileImageEditor.profileImageElem()).naturalHeight() / -2,
 				$(profileImageEditor.profileImageElem()).naturalWidth(),
 				$(profileImageEditor.profileImageElem()).naturalHeight());
+			profileImageEditor.__context__.lineWidth = 2;
+			profileImageEditor.__context__.strokeStyle = "rgb(128,128,128)";
+			// console.log(imageCropper.getCroppingCoordinatesAsCSV());
+			// profileImageEditor.__context__.strokeRect.apply(profileImageEditor.__context__, imageCropper.getCroppingCoordinatesAsCSV().split(','));
+			profileImageEditor.__context__.closePath();
 			profileImageEditor.__context__.beginPath();
 			profileImageEditor.__context__.restore();
 			var frameShowWidth = Math.min(profileImageEditor.innerFrameWidth(), profileImageEditor.innerFrameWidth() * (profileImageEditor.minZoom() - profileImageEditor.profileZoom()) / profileImageEditor.minZoom());
