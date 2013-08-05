@@ -91,17 +91,16 @@ _, __, ___) {
 			if (!canvasScale) {
 				return false;
 			}
-			var boxWidth = profileImageEditor.__context__.canvas.width / (profileImageEditor.profileZoomExp() * canvasScale);
-			var center = profileImageEditor.profilePictureCenter();
-			centerX = center.x + $(profileImageEditor.profileImageElem()).naturalWidth() / 2;
-			centerY = center.y + $(profileImageEditor.profileImageElem()).naturalHeight() / 2;
-			console.log(center);
-			return [
-				centerX - boxWidth / 2,
-				centerX - boxWidth / 2,
-				Math.floor(boxWidth),
-				Math.floor(boxWidth)
-			].join(',');
+			var boxSize = (profileImageEditor.__context__.canvas.width - profileImageEditor.innerFrameWidth() * 2) / (profileImageEditor.profileZoomExp() * canvasScale);
+			var cropCenter = profileImageEditor.profilePictureCenter();
+			var imageWidth = $(profileImageEditor.profileImageElem()).naturalWidth();
+			var imageHeight = $(profileImageEditor.profileImageElem()).naturalHeight();
+			// keep the coords inside the original image
+			var top = Math.max(0, (imageHeight - boxSize) / 2 - cropCenter.y);
+			var left = Math.max(0, (imageWidth - boxSize) / 2 - cropCenter.x);
+			var height = Math.min(boxSize, imageHeight - top);
+			var width = Math.min(boxSize, imageWidth - left);
+			return $.map([left, top, width, height], Math.floor).join(',');
 		};
 		this.croppedImageDataUrl = function () {
 			// use another canvas to crop out the frame around the image
@@ -180,8 +179,6 @@ _, __, ___) {
 				$(profileImageEditor.profileImageElem()).naturalHeight());
 			profileImageEditor.__context__.lineWidth = 2;
 			profileImageEditor.__context__.strokeStyle = "rgb(128,128,128)";
-			// console.log(imageCropper.getCroppingCoordinatesAsCSV());
-			// profileImageEditor.__context__.strokeRect.apply(profileImageEditor.__context__, imageCropper.getCroppingCoordinatesAsCSV().split(','));
 			profileImageEditor.__context__.closePath();
 			profileImageEditor.__context__.beginPath();
 			profileImageEditor.__context__.restore();
