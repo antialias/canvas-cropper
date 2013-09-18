@@ -82,7 +82,7 @@ _, __, ___) {
 		};
 		var imageCropper = this;
 		profileImageEditor.handlers.saveProfilePicture = function () {
-			options.save(imageCropper.croppedImageDataUrl());
+			options.save(imageCropper.croppedImageDataUrl("image/png"));
 		};
 		this.getCroppingCoordinatesAsCSV = function () {
 			if (!profileImageEditor.profileZoomExp()) {
@@ -102,7 +102,7 @@ _, __, ___) {
 			var width = Math.min(boxSize, imageWidth - left);
 			return $.map([left, top, width, height], Math.floor).join(',');
 		};
-		this.croppedImageDataUrl = function () {
+		this.croppedImageDataUrl = function (type, option) {
 			// use another canvas to crop out the frame around the image
 			var insideFrame = $("<canvas>").attr({
 				width: profileImageEditor.__context__.canvas.width - 2*profileImageEditor.innerFrameWidth(),
@@ -119,11 +119,12 @@ _, __, ___) {
 				profileImageEditor.__context__.canvas.width,
 				profileImageEditor.__context__.canvas.height
 			);
-			return insideFrame.toDataURL("image/jpeg", 0.8);
+			return insideFrame.toDataURL(type, option);
 		};
 		this.imageAsBlob = function () {
-			var imageURL = imageCropper.croppedImageDataUrl();
-			var imageBlob = lpUtils.dataURItoBlob(imageURL);
+			var imageType = 'image/png';
+			var imageURL = imageCropper.croppedImageDataUrl(imageType);
+			var imageBlob = lpUtils.dataURItoBlob(imageURL, {type: imageType});
 			return imageBlob;
 		};
 		profileImageEditor.profileZoomExp = ko.computed(function () {
