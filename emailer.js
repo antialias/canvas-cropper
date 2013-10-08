@@ -9,6 +9,7 @@ define(['knockout'], function (ko) {
 			}, _args);
 			var emailModel = {
 				subject: ko.observable(args.subject),
+				to: ko.observable(args.to),
 				from: ko.observable(args.from),
 				copyMe: ko.observable(false),
 				message: ko.observable(args.message),
