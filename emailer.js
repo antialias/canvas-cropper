@@ -31,7 +31,7 @@ define(['knockout'], function (ko) {
 					height: 412,
 					width: 360,
 					autoOpen: true,
-					close: $.proxy($form, 'detach')
+					close: function () {$form.detach();}
 				});
 				$submit = $form.find(".send-email-button");
 				$submit.click(function (e) {
