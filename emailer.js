@@ -42,7 +42,7 @@ define(['knockout'], function (ko) {
 					}, ko.toJS(emailModel));
 					console.log("postData: ", postData);
 					$.post("/email/send", postData).done(function () {
-						console.log("finished sending email");
+						$form.dialog("close");
 					});
 				});
 			});
