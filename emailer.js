@@ -23,7 +23,7 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 			var $form = $("<div>").load(
 				"/email/form",
 				{
-					dialogHeading: "this is your happy email form"
+					dialogHeading: "Email this Question"
 				},
 				$.proxy(loadedFormHTML, 'resolve')
 			);
@@ -33,8 +33,7 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 				$form.dialog({
 					hide: {effect: 'fade', duration: 200},
 					modal: true,
-					height: 412,
-					width: 360,
+					width: 470,
 					autoOpen: true,
 					close: function () {$form.detach();}
 				});
@@ -61,5 +60,5 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 				model: emailModel
 			};
 		}
-	}
+	};
 });
