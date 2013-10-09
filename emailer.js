@@ -15,7 +15,7 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 					to: ko.observable(args.to),
 					from: ko.observable(args.from),
 					copyMe: ko.observable(false),
-					message: ko.observable(args.message),
+					message: ko.observable(args.message)
 				},
 				attachedHTML: ko.observable(args.attachedHTML)
 			};
