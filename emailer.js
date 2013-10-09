@@ -1,19 +1,23 @@
-define(['knockout'], function (ko) {
+define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
+	lpUtils.ajaxStatusCode401Login();
 	return {
 		composeMessage: function (_args) {
 			var args = $.extend({
+				submitTo: undefined,
 				subject: "",
 				from: "",
 				message: "",
-				messageFixedBelowHTML: ""
+				attachedHTML: ""
 			}, _args);
 			var emailModel = {
-				subject: ko.observable(args.subject),
-				to: ko.observable(args.to),
-				from: ko.observable(args.from),
-				copyMe: ko.observable(false),
-				message: ko.observable(args.message),
-				messageFixedBelowHTML: args.messageFixedBelowHTML
+				emailContent: {
+					subject: ko.observable(args.subject),
+					to: ko.observable(args.to),
+					from: ko.observable(args.from),
+					copyMe: ko.observable(false),
+					message: ko.observable(args.message),
+				},
+				attachedHTML: ko.observable(args.attachedHTML)
 			};
 			var loadedFormHTML = new $.Deferred();
 			var $form = $("<div>").load(
@@ -40,13 +44,22 @@ define(['knockout'], function (ko) {
 					var postData = $.extend({
 						"org.codehaus.groovy.grails.SYNCHRONIZER_TOKEN": $form.find("[name=org\\.codehaus\\.groovy\\.grails\\.SYNCHRONIZER_TOKEN]").val(),
 						"org.codehaus.groovy.grails.SYNCHRONIZER_URI": $form.find("[name=org\\.codehaus\\.groovy\\.grails\\.SYNCHRONIZER_URI]").val()
-					}, ko.toJS(emailModel));
-					console.log("postData: ", postData);
-					$.post("/email/send", postData).done(function () {
-						$form.dialog("close");
+					}, ko.toJS(emailModel.emailContent));
+					$.ajax({
+						type: 'POST',
+						url: args.submitTo,
+						data: postData,
+						statusCode: {401: "login"},
+						success: function () {
+							$form.dialog("close");
+						}
 					});
 				});
 			});
+			return {
+				loadedFormHTML: loadedFormHTML,
+				model: emailModel
+			};
 		}
 	}
 });
