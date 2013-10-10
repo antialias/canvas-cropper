@@ -35,7 +35,7 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 				$form.dialog({
 					hide: {effect: 'fade', duration: 200},
 					modal: true,
-					width: 470,
+					width: 600,
 					autoOpen: true,
 					close: function () {$form.detach();}
 				});
