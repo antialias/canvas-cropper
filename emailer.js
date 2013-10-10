@@ -36,7 +36,7 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 				$form.appendTo(document.body);
 				ko.applyBindings(emailModel, $form.get(0));
 				$form.dialog({
-					position: { my: "top", at: "center top", of: $("#global-container") },
+					position: { my: "top", at: "top+10", of: $("#global-container") },
 					hide: {effect: 'fade', duration: 200},
 					modal: true,
 					width: 600,
