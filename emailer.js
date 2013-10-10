@@ -21,6 +21,9 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 				},
 				attachedHTML: ko.observable(args.attachedHTML)
 			};
+			emailModel.commaFormat = function(val){
+				return lpUtils.commaFormat(val);
+			};
 			var loadedFormHTML = new $.Deferred();
 			var $form = $("<div>").load(
 				"/email/form",
@@ -33,7 +36,7 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 				$form.appendTo(document.body);
 				ko.applyBindings(emailModel, $form.get(0));
 				$form.dialog({
-					position: { my: "top", at: "center", of: $("#global-container") },
+					position: { my: "top", at: "center top", of: $("#global-container") },
 					hide: {effect: 'fade', duration: 200},
 					modal: true,
 					width: 600,
@@ -41,21 +44,57 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 					close: function () {$form.detach();}
 				});
 				$submit = $form.find(".send-email-button");
+				$form.find(".close-form").click(function(e){
+					$form.dialog( "close" );
+				});
 				$submit.click(function (e) {
 					e.preventDefault();
-					var postData = $.extend({
-						"org.codehaus.groovy.grails.SYNCHRONIZER_TOKEN": $form.find("[name=org\\.codehaus\\.groovy\\.grails\\.SYNCHRONIZER_TOKEN]").val(),
-						"org.codehaus.groovy.grails.SYNCHRONIZER_URI": $form.find("[name=org\\.codehaus\\.groovy\\.grails\\.SYNCHRONIZER_URI]").val()
-					}, ko.toJS(emailModel.emailContent));
-					$.ajax({
-						type: 'POST',
-						url: args.submitTo,
-						data: postData,
-						statusCode: {401: "login"},
-						success: function () {
-							$form.dialog("close");
+					var allOk=true,
+						first=true,
+						$required=$form.find("input.required, input.email, textarea");
+					$form.find('.field-block').removeClass("active-error");
+					$required.each(function(){
+						var $this=$(this),
+							$parent=$(this).parents('.field-block'),
+							invalidContent=false,
+							maxLength=$this.data("max-length"),
+							message="blank";
+						if($this.hasClass("required")&&(!$this.val()||$.trim($this.val()) === "")){
+							invalidContent=true;
+						}else if($this.hasClass("email") && !lpUtils.validateEmail($this.val())){
+							invalidContent=true;
+							message="invalid-email";
+						}else if(maxLength && $.trim($this.val()).length>maxLength){
+							invalidContent=true;
+							message="size";
+						}
+						if(invalidContent){
+							message=$parent.data(message);
+							$parent.find(".tooltip-error span").html(message);
+							$parent.addClass("active-error");
+							if(first){
+								$this.focus();
+								first=false;
+							}
+							
+							allOk=false;
 						}
 					});
+					if(allOk){
+						var postData = $.extend({
+							"org.codehaus.groovy.grails.SYNCHRONIZER_TOKEN": $form.find("[name=org\\.codehaus\\.groovy\\.grails\\.SYNCHRONIZER_TOKEN]").val(),
+							"org.codehaus.groovy.grails.SYNCHRONIZER_URI": $form.find("[name=org\\.codehaus\\.groovy\\.grails\\.SYNCHRONIZER_URI]").val()
+						}, ko.toJS(emailModel.emailContent));
+						$.ajax({
+							type: 'POST',
+							url: args.submitTo,
+							data: postData,
+							statusCode: {401: "login"},
+							success: function () {
+								$form.dialog("close");
+							}
+						});
+					}
 				});
 			});
 			return {
