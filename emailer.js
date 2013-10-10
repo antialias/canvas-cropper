@@ -3,6 +3,7 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 	return {
 		composeMessage: function (_args) {
 			var args = $.extend({
+				fixedFields: [],
 				submitTo: undefined,
 				subject: "",
 				from: "",
@@ -10,6 +11,7 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 				attachedHTML: ""
 			}, _args);
 			var emailModel = {
+				fixedFields: ko.observableArray(args.fixedFields),
 				emailContent: {
 					subject: ko.observable(args.subject),
 					to: ko.observable(args.to),
