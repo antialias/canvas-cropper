@@ -11,6 +11,7 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 				attachedHTML: ""
 			}, _args);
 			var emailModel = {
+				sendingStatus: ko.observable("send"),
 				fixedFields: ko.observableArray(args.fixedFields),
 				emailContent: {
 					subject: ko.observable(args.subject),
@@ -82,20 +83,24 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 						}
 					});
 					if(!allOk){
-						return
+						return;
 					}
 					var postData = $.extend({
 						"org.codehaus.groovy.grails.SYNCHRONIZER_TOKEN": $form.find("[name=org\\.codehaus\\.groovy\\.grails\\.SYNCHRONIZER_TOKEN]").val(),
 						"org.codehaus.groovy.grails.SYNCHRONIZER_URI": $form.find("[name=org\\.codehaus\\.groovy\\.grails\\.SYNCHRONIZER_URI]").val()
 					}, ko.toJS(emailModel.emailContent));
+					emailModel.sendingStatus("sending...");
 					$.ajax({
 						type: 'POST',
 						url: args.submitTo,
 						data: postData,
 						statusCode: {401: "login"},
 						success: function () {
-							$form.dialog("close");
+							emailModel.sendingStatus("sent");
+							$("body,html").animate({scrollTop: $form.offset().top - $("#global-navigation").height()});
 						}
+					}).fail(function () {
+						emailModel.sendingStatus("error");
 					});
 				});
 			});
