@@ -49,6 +49,7 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 				});
 				$submit.click(function (e) {
 					e.preventDefault();
+					// TODO: replace this validation code with a ko.validation binding in the markup
 					var allOk=true,
 						first=true,
 						$required=$form.find("input.required, input.email, textarea");
@@ -80,21 +81,22 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 							allOk=false;
 						}
 					});
-					if(allOk){
-						var postData = $.extend({
-							"org.codehaus.groovy.grails.SYNCHRONIZER_TOKEN": $form.find("[name=org\\.codehaus\\.groovy\\.grails\\.SYNCHRONIZER_TOKEN]").val(),
-							"org.codehaus.groovy.grails.SYNCHRONIZER_URI": $form.find("[name=org\\.codehaus\\.groovy\\.grails\\.SYNCHRONIZER_URI]").val()
-						}, ko.toJS(emailModel.emailContent));
-						$.ajax({
-							type: 'POST',
-							url: args.submitTo,
-							data: postData,
-							statusCode: {401: "login"},
-							success: function () {
-								$form.dialog("close");
-							}
-						});
+					if(!allOk){
+						return
 					}
+					var postData = $.extend({
+						"org.codehaus.groovy.grails.SYNCHRONIZER_TOKEN": $form.find("[name=org\\.codehaus\\.groovy\\.grails\\.SYNCHRONIZER_TOKEN]").val(),
+						"org.codehaus.groovy.grails.SYNCHRONIZER_URI": $form.find("[name=org\\.codehaus\\.groovy\\.grails\\.SYNCHRONIZER_URI]").val()
+					}, ko.toJS(emailModel.emailContent));
+					$.ajax({
+						type: 'POST',
+						url: args.submitTo,
+						data: postData,
+						statusCode: {401: "login"},
+						success: function () {
+							$form.dialog("close");
+						}
+					});
 				});
 			});
 			return {
