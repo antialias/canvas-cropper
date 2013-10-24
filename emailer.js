@@ -2,6 +2,7 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 	lpUtils.ajaxStatusCode401Login();
 	return {
 		composeMessage: function (_args) {
+			var emailed = new $.Deferred();
 			var args = $.extend({
 				fixedFields: [],
 				submitTo: undefined,
@@ -95,9 +96,13 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 						url: args.submitTo,
 						data: postData,
 						statusCode: {401: "login"},
-						success: function () {
+						success: function (response) {
 							emailModel.sendingStatus("sent");
 							$("body,html").animate({scrollTop: $form.offset().top - $("#global-navigation").height()});
+							emailed.resolve(response);
+						},
+						error: function () {
+							emailed.reject();
 						}
 					}).fail(function () {
 						emailModel.sendingStatus("error");
@@ -105,6 +110,7 @@ define(['knockout', '/js/lp/lib/utils.js'], function (ko, lpUtils) {
 				});
 			});
 			return {
+				emailed: emailed,
 				loadedFormHTML: loadedFormHTML,
 				model: emailModel
 			};
