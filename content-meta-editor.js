@@ -35,6 +35,9 @@ define([
 			mode: "chooser",
 			categoryTypeFilter: ko.observable("topic"),
 			itemId: ko.observable(),
+			itemType: ko.observable(),
+			itemTitle: ko.observable(),
+			providerThumb: ko.observable(),
 			preload: {
 				defer: new $.Deferred()
 			},
@@ -57,12 +60,11 @@ define([
 				},
 				submitCategories: function (model, event) {
 					// TODO figure out if the data model is in a or b
-					var itemType=$("#assesmentItemType").val();
 					var contentUpdateMetaRequest = { // src/java/com/ktp/caffeine/api/model/ContentUpdateMetaRequest.java
-						title: (itemType === "image") ? $("#uploadItemTitle").val() : $("#itemTitle").val(),
+						title: (metaEditor.model.itemType() === "image") ? $("#uploadItemTitle").val() : $("#itemTitle").val(),
 						description: undefined, // description from tagger model
-						searchable: (-1 !== $.inArray(itemType, ["assessmentItem", "question"])) ? !$("#unlisted").prop('checked') : undefined,
-						itemType: itemType,
+						searchable: (-1 !== $.inArray(metaEditor.model.itemType(), ["assessmentItem", "question"])) ? !$("#unlisted").prop('checked') : undefined,
+						itemType: metaEditor.model.itemType(),
 						tags: metaEditor.model.model.tags(),
 						categories: $.map(metaEditor.model.model.categories(), function (category) {return category.id;})
 					};
@@ -90,6 +92,11 @@ define([
 				if (metaEditor.model.tags) {
 					debugger;
 				}
+				metaEditor.model.itemType(meta.item.itemType);
+				metaEditor.model.itemTitle(meta.item.title);
+				metaEditor.model.providerThumb($.grep(lpUtils.asArray(meta.item.properties.property), function () {
+					return this.key === "providerThumb";
+				}).pop());
 				metaEditor.model.preload.defer.resolve();
 			}).fail(function() {
 				console.error(arguments);
