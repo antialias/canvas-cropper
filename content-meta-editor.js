@@ -70,7 +70,6 @@ define(['knockout', '/js/lp/models/tagger.js', '/js/lp/lib/core.js', '/js/lp/lib
 			}
 		});
 		metaEditor.model.itemId.subscribe(function (newItemId) {
-			console.log("doing preload");
 			core.ajax({
 				path: "/content/" + newItemId + "/meta",
 				dataType: 'text-eaten-json'
