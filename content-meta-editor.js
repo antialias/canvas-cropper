@@ -75,7 +75,6 @@ define([
 		var metaPrime = ko.computed(function () { // src/java/com/ktp/caffeine/api/model/ContentUpdateMetaRequest.java
 			var meta = $.extend({}, metaEditor.model.meta());
 			if (metaEditor.model.itemTitleNew()) {
-				console.log("updating meta title")
 				meta.title = metaEditor.model.itemTitleNew();
 			}
 			// meta.tags = metaEditor.model.model.tags; // TODO: get tags from the model
