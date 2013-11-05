@@ -34,10 +34,9 @@ define([
 		this.model = new Tagger({
 			mode: "chooser",
 			categoryTypeFilter: ko.observable("topic"),
+			meta: ko.observable(),
 			itemId: ko.observable(),
-			itemType: ko.observable(),
-			itemTitle: ko.observable(),
-			providerThumb: ko.observable(),
+			itemTitleNew: ko.observable(),
 			preload: {
 				defer: new $.Deferred()
 			},
@@ -59,19 +58,10 @@ define([
 					metaEditor.$categoryChooser.dialog("close");
 				},
 				submitCategories: function (model, event) {
-					// TODO figure out if the data model is in a or b
-					var contentUpdateMetaRequest = { // src/java/com/ktp/caffeine/api/model/ContentUpdateMetaRequest.java
-						title: (metaEditor.model.itemType() === "image") ? $("#uploadItemTitle").val() : $("#itemTitle").val(),
-						description: undefined, // description from tagger model
-						searchable: (-1 !== $.inArray(metaEditor.model.itemType(), ["assessmentItem", "question"])) ? !$("#unlisted").prop('checked') : undefined,
-						itemType: metaEditor.model.itemType(),
-						tags: metaEditor.model.model.tags(),
-						categories: $.map(metaEditor.model.model.categories(), function (category) {return category.id;})
-					};
 					core.ajax({
 						path: "/content/" + metaEditor.model.itemId() + "/meta/update", // contentUpdateMetaRequest
 						type: "POST",
-						requestObject: contentUpdateMetaRequest,
+						requestObject: metaPrime(),
 						dataType: "text-eaten-json",
 						success: function(actionResponse) {
 							metaEditor.$categoryChooser.dialog("close");
@@ -81,6 +71,28 @@ define([
 					});
 				}
 			}
+		});
+		var metaPrime = ko.computed(function () { // src/java/com/ktp/caffeine/api/model/ContentUpdateMetaRequest.java
+			var meta = $.extend({}, metaEditor.model.meta());
+			if (metaEditor.model.itemTitleNew()) {
+				console.log("updating meta title")
+				meta.title = metaEditor.model.itemTitleNew();
+			}
+			// meta.tags = metaEditor.model.model.tags; // TODO: get tags from the model
+			meta.categories = $.map(
+				metaEditor.model.model.categories(),
+				function (category) {return category.id;}
+			);
+			return meta;
+		});
+		metaEditor.model.providerThumb = ko.computed(function () {
+			if (!metaEditor.model.meta()) {
+				return;
+			}
+			return $.grep(lpUtils.asArray(metaEditor.model.meta().properties.property), function () {
+				debugger;
+				return this.key === "providerThumb";
+			}).pop();
 		});
 		metaEditor.model.itemId.subscribe(function (newItemId) {
 			core.ajax({
@@ -92,12 +104,8 @@ define([
 				if (metaEditor.model.tags) {
 					debugger;
 				}
-				metaEditor.model.itemType(meta.item.itemType);
-				metaEditor.model.itemTitle(meta.item.title);
-				metaEditor.model.providerThumb($.grep(lpUtils.asArray(meta.item.properties.property), function () {
-					return this.key === "providerThumb";
-				}).pop());
 				metaEditor.model.preload.defer.resolve();
+				metaEditor.model.meta(meta.item);
 			}).fail(function() {
 				console.error(arguments);
 			});
