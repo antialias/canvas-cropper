@@ -1,4 +1,16 @@
-define(['knockout', '/js/lp/models/tagger.js', '/js/lp/lib/core.js', '/js/lp/lib/dMemo.js', '/js/lp/lib/utils.js'], function (ko, Tagger, Core, dMemo, lpUtils) {
+define([
+	'knockout',
+	'/js/lp/models/tagger.js',
+	'/js/lp/lib/core.js',
+	'/js/lp/lib/dMemo.js',
+	'/js/lp/lib/utils.js'
+], function (
+	ko,
+	Tagger,
+	Core,
+	dMemo,
+	lpUtils
+) {
 	var core = new Core();
 	var gotMarkup = dMemo(function (D) {
 		$.ajax({
