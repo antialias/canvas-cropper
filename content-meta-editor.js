@@ -61,9 +61,6 @@ define(['knockout', '/js/lp/models/tagger.js', '/js/lp/lib/core.js', '/js/lp/lib
 						requestObject: contentUpdateMetaRequest,
 						dataType: "text-eaten-json",
 						success: function(actionResponse) {
-							if (itemType == "image") { // TODO: test image mode and then remove this
-								$("#popup").removeClass("upload-categories");
-							}
 							metaEditor.$categoryChooser.dialog("close");
 						},
 						contentType: "application/xml",
