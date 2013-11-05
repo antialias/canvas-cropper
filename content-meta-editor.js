@@ -50,7 +50,7 @@ define(['knockout', '/js/lp/models/tagger.js', '/js/lp/lib/core.js', '/js/lp/lib
 					var contentUpdateMetaRequest = { // src/java/com/ktp/caffeine/api/model/ContentUpdateMetaRequest.java
 						title: (itemType === "image") ? $("#uploadItemTitle").val() : $("#itemTitle").val(),
 						description: undefined, // description from tagger model
-						searchable: (-1 !== $.inArray(itemType, ["assessmentItem", "question"]) ? !$("#unlisted").prop('checked') : undefined,
+						searchable: (-1 !== $.inArray(itemType, ["assessmentItem", "question"])) ? !$("#unlisted").prop('checked') : undefined,
 						itemType: itemType,
 						tags: metaEditor.model.model.tags(),
 						categories: $.map(metaEditor.model.model.categories(), function (category) {return category.id;})
