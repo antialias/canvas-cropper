@@ -25,7 +25,6 @@ define([
 		});
 	});
 	var ContentMetaEditor = function (_args) {
-		console.log("making a new ContentMetaEditor");
 		var args = $.extend({
 			// preload: false,
 			// showOnCreate: false,
@@ -94,7 +93,6 @@ define([
 				metaEditor.model.preload.defer.resolve();
 			}).fail(function() {
 				console.error(arguments);
-				debugger;
 			});
 		});
 		this.prepareToShow = dMemo(function (D) {
