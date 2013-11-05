@@ -28,7 +28,7 @@ define([
 		var args = $.extend({
 			// preload: false,
 			// showOnCreate: false,
-			itemId: undefined
+			// itemId: undefined
 		}, _args);
 		var metaEditor = this;
 		this.model = new Tagger({
