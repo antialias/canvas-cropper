@@ -12,14 +12,14 @@ define(['knockout', '/js/lp/models/tagger.js', '/js/lp/lib/core.js', '/js/lp/lib
 			D.reject();
 		});
 	});
-	var CategoryChooserWidget = function (_args) {
-		console.log("making a new CategoryChooserWidget");
+	var ContentMetaEditor = function (_args) {
+		console.log("making a new ContentMetaEditor");
 		var args = $.extend({
 			// preload: false,
 			// showOnCreate: false,
 			itemId: undefined
 		}, _args);
-		var categoryChooserWidget = this;
+		var metaEditor = this;
 		this.model = new Tagger({
 			mode: "chooser",
 			categoryTypeFilter: ko.observable("topic"),
@@ -42,7 +42,7 @@ define(['knockout', '/js/lp/models/tagger.js', '/js/lp/lib/core.js', '/js/lp/lib
 			unlisted:ko.observable($("#unlisted").prop('checked')),
 			handlers: {
 				close: function (a,b) {
-					categoryChooserWidget.$categoryChooser.dialog("close");
+					metaEditor.$categoryChooser.dialog("close");
 				},
 				submitCategories: function (model, event) {
 					// TODO figure out if the data model is in a or b
@@ -52,8 +52,8 @@ define(['knockout', '/js/lp/models/tagger.js', '/js/lp/lib/core.js', '/js/lp/lib
 						description: undefined, // description from tagger model
 						searchable: (itemType=="assessmentItem" || itemType=="question") ? !$("#unlisted").prop('checked') : undefined,
 						itemType: itemType,
-						tags: categoryChooserWidget.model.model.tags(),
-						categories: $.map(categoryChooserWidget.model.model.categories(), function (category) {return category.id;})
+						tags: metaEditor.model.model.tags(),
+						categories: $.map(metaEditor.model.model.categories(), function (category) {return category.id;})
 					};
 					core.ajax({
 						path: "/content/" + $("#assesmentItemId").val() + "/meta/update", // contentUpdateMetaRequest
@@ -64,7 +64,7 @@ define(['knockout', '/js/lp/models/tagger.js', '/js/lp/lib/core.js', '/js/lp/lib
 							if (itemType == "image") { // TODO: test image mode and then remove this
 								$("#popup").removeClass("upload-categories");
 							}
-							categoryChooserWidget.$categoryChooser.dialog("close");
+							metaEditor.$categoryChooser.dialog("close");
 						},
 						contentType: "application/xml",
 						statusCode: { 401: "login" }
@@ -72,18 +72,18 @@ define(['knockout', '/js/lp/models/tagger.js', '/js/lp/lib/core.js', '/js/lp/lib
 				}
 			}
 		});
-		categoryChooserWidget.model.itemId.subscribe(function (newItemId) {
+		metaEditor.model.itemId.subscribe(function (newItemId) {
 			console.log("doing preload");
 			core.ajax({
 				path: "/content/" + newItemId + "/meta",
 				dataType: 'text-eaten-json'
 			}).done(function (meta) {
-				categoryChooserWidget.model.preload.selectedCategoryIds = $.map(lpUtils.asArray(meta.item.categories.category), function (n) {return parseInt(n);});
-				// TODO: update categoryChooserWidget.model.tags
-				if (categoryChooserWidget.model.tags) {
+				metaEditor.model.preload.selectedCategoryIds = $.map(lpUtils.asArray(meta.item.categories.category), function (n) {return parseInt(n);});
+				// TODO: update metaEditor.model.tags
+				if (metaEditor.model.tags) {
 					debugger;
 				}
-				categoryChooserWidget.model.preload.defer.resolve();
+				metaEditor.model.preload.defer.resolve();
 			}).fail(function() {
 				console.error(arguments);
 				debugger;
@@ -91,11 +91,11 @@ define(['knockout', '/js/lp/models/tagger.js', '/js/lp/lib/core.js', '/js/lp/lib
 		});
 		this.prepareToShow = dMemo(function (D) {
 			gotMarkup().done(function (markup) {
-				if (!categoryChooserWidget.$categoryChooser) {
-					categoryChooserWidget.$categoryChooser = $("<div>").html(markup);
-					$(document.body).append(categoryChooserWidget.$categoryChooser);
-					categoryChooserWidget.model.applyTemplate(categoryChooserWidget.$categoryChooser.get(0));
-					categoryChooserWidget.$categoryChooser.dialog({
+				if (!metaEditor.$categoryChooser) {
+					metaEditor.$categoryChooser = $("<div>").html(markup);
+					$(document.body).append(metaEditor.$categoryChooser);
+					metaEditor.model.applyTemplate(metaEditor.$categoryChooser.get(0));
+					metaEditor.$categoryChooser.dialog({
 						autoOpen: false,
 						width: 800
 					});
@@ -104,12 +104,12 @@ define(['knockout', '/js/lp/models/tagger.js', '/js/lp/lib/core.js', '/js/lp/lib
 			}).fail(function () {D.reject();});
 		});
 	};
-	CategoryChooserWidget.prototype.show = function() {
-		var categoryChooserWidget = this;
-		categoryChooserWidget.prepareToShow().done(function () {
+	ContentMetaEditor.prototype.show = function() {
+		var metaEditor = this;
+		metaEditor.prepareToShow().done(function () {
 			// TODO: hide / unhide the widget instead of changing the body class
-			categoryChooserWidget.$categoryChooser.dialog("open");
+			metaEditor.$categoryChooser.dialog("open");
 		});
 	};
-	return CategoryChooserWidget;
+	return ContentMetaEditor;
 });
