@@ -56,7 +56,7 @@ define(['knockout', '/js/lp/models/tagger.js', '/js/lp/lib/core.js', '/js/lp/lib
 						categories: $.map(metaEditor.model.model.categories(), function (category) {return category.id;})
 					};
 					core.ajax({
-						path: "/content/" + $("#assesmentItemId").val() + "/meta/update", // contentUpdateMetaRequest
+						path: "/content/" + metaEditor.model.itemId() + "/meta/update", // contentUpdateMetaRequest
 						type: "POST",
 						requestObject: contentUpdateMetaRequest,
 						dataType: "text-eaten-json",
