@@ -31,6 +31,7 @@ define([
 			// itemId: undefined
 		}, _args);
 		var metaEditor = this;
+		var submitCount = 0;
 		this.model = new Tagger({
 			mode: "chooser",
 			categoryTypeFilter: ko.observable("topic"),
@@ -58,17 +59,27 @@ define([
 					metaEditor.$categoryChooser.dialog("close");
 				},
 				submitCategories: function (model, event) {
-					core.ajax({
-						path: "/content/" + metaEditor.model.itemId() + "/meta/update", // contentUpdateMetaRequest
-						type: "POST",
-						requestObject: metaPrime(),
-						dataType: "text-eaten-json",
-						success: function(actionResponse) {
-							metaEditor.$categoryChooser.dialog("close");
-						},
-						contentType: "application/xml",
-						statusCode: { 401: "login" }
+					var ourSubmit = submitCount;
+					if ("pending" === itemIdHasBeenSet.state()) {
+						metaEditor.$categoryChooser.dialog("close");
+					}
+					itemIdHasBeenSet.done(function () {
+						var didDefer = ourSubmit !== submitCount;
+						core.ajax({
+							path: "/content/" + metaEditor.model.itemId() + "/meta/update", // contentUpdateMetaRequest
+							type: "POST",
+							requestObject: metaPrime(),
+							dataType: "text-eaten-json",
+							success: function(actionResponse) {
+								if (!didDefer) {
+									metaEditor.$categoryChooser.dialog("close");
+								}
+							},
+							contentType: "application/xml",
+							statusCode: { 401: "login" }
+						});
 					});
+					++submitCount;
 				}
 			}
 		});
@@ -93,11 +104,15 @@ define([
 				return this.key === "providerThumb";
 			}).pop();
 		});
+		var itemIdHasBeenSet = new $.Deferred();
 		metaEditor.model.itemId.subscribe(function (newItemId) {
 			core.ajax({
 				path: "/content/" + newItemId + "/meta",
 				dataType: 'text-eaten-json'
 			}).done(function (meta) {
+				if ("pending" === itemIdHasBeenSet.state()) {
+					itemIdHasBeenSet.resolve();
+				}
 				metaEditor.model.preload.selectedCategoryIds = $.map(lpUtils.asArray(meta.item.categories.category), function (n) {return parseInt(n);});
 				// TODO: update metaEditor.model.tags
 				if (metaEditor.model.tags) {
