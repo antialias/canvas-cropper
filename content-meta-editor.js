@@ -133,5 +133,13 @@ define([
 			metaEditor.$categoryChooser.dialog("open");
 		});
 	};
+	var metaEditorCache = {};
+	ContentMetaEditor.getForItemId = function (itemId) {
+		if (!metaEditorCache.hasOwnProperty(itemId)) {
+			metaEditorCache[itemId] = new ContentMetaEditor({});
+			metaEditorCache[itemId].model.itemId(itemId);
+		}
+		return metaEditorCache[itemId];
+	};
 	return ContentMetaEditor;
 });
