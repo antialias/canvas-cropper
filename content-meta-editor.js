@@ -116,8 +116,10 @@ define([
 					$(document.body).append(metaEditor.$categoryChooser);
 					metaEditor.model.applyTemplate(metaEditor.$categoryChooser.get(0));
 					metaEditor.$categoryChooser.dialog({
+						appendTo: "body .page",
 						autoOpen: false,
-						width: 800
+						width: "100%",
+						modal: true
 					});
 					D.resolve();
 				}
