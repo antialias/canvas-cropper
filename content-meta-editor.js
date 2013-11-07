@@ -38,6 +38,8 @@ define([
 			meta: ko.observable(),
 			itemId: ko.observable(),
 			itemTitleNew: ko.observable(),
+			userMessage: ko.observable(),
+			userMessageSubtext: ko.observable(),
 			preload: {
 				defer: new $.Deferred()
 			},
@@ -141,9 +143,15 @@ define([
 			}).fail(function () {D.reject();});
 		});
 	};
-	ContentMetaEditor.prototype.show = function() {
+	ContentMetaEditor.prototype.show = function(_args) {
+		var args = $.extend({
+			userMessage: "Categorize your content",
+			userMessageSubtext: ""
+		}, _args);
 		var metaEditor = this;
 		metaEditor.prepareToShow().done(function () {
+			metaEditor.model.userMessage(args.userMessage);
+			metaEditor.model.userMessageSubtext(args.userMessageSubtext);
 			// TODO: hide / unhide the widget instead of changing the body class
 			metaEditor.$categoryChooser.dialog("open");
 		});
