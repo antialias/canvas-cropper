@@ -133,6 +133,7 @@ define([
 					$(document.body).append(metaEditor.$categoryChooser);
 					metaEditor.model.applyTemplate(metaEditor.$categoryChooser.get(0));
 					metaEditor.$categoryChooser.dialog({
+						position: {my: "top+1", at: "top", of: "body .page", collission: "none"},
 						appendTo: "body .page",
 						autoOpen: false,
 						width: "100%",
@@ -152,7 +153,7 @@ define([
 		metaEditor.prepareToShow().done(function () {
 			metaEditor.model.userMessage(args.userMessage);
 			metaEditor.model.userMessageSubtext(args.userMessageSubtext);
-			// TODO: hide / unhide the widget instead of changing the body class
+			window.scrollTo(0,0);
 			metaEditor.$categoryChooser.dialog("open");
 		});
 	};
