@@ -104,7 +104,6 @@ define([
 				return;
 			}
 			return $.grep(lpUtils.asArray(metaEditor.model.meta().properties.property), function () {
-				debugger;
 				return this.key === "providerThumb";
 			}).pop();
 		});
