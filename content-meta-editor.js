@@ -60,6 +60,7 @@ define([
 				close: function (a,b) {
 					metaEditor.$newPage.hide();
 					metaEditor.$mainPage.show();
+					$('html, body').animate({scrollTop: metaEditor.mainScrolltopBeforeOpen},0);
 				},
 				submitCategories: function (model, event) {
 					var ourSubmit = submitCount;
@@ -149,7 +150,8 @@ define([
 		metaEditor.prepareToShow().done(function () {
 			metaEditor.model.userMessage(args.userMessage);
 			metaEditor.model.userMessageSubtext(args.userMessageSubtext);
-			window.scrollTo(0,0);
+			metaEditor.mainScrolltopBeforeOpen = $(window).scrollTop();
+			$('html, body').animate({scrollTop: 0},0);
 			metaEditor.$mainPage.hide();
 			metaEditor.$newPage.show();
 		});
