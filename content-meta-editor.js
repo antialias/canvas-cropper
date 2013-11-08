@@ -90,7 +90,7 @@ define([
 			if (metaEditor.model.itemTitleNew()) {
 				meta.title = metaEditor.model.itemTitleNew();
 			}
-			// meta.tags = metaEditor.model.model.tags; // TODO: get tags from the model
+			meta.tags = metaEditor.model.model.tags();
 			meta.categories = $.map(
 				metaEditor.model.model.categories(),
 				function (category) {return category.id;}
@@ -119,10 +119,7 @@ define([
 					lpUtils.asArray(meta.item.categories.category),
 					function (n) { return window.parseInt(n, 10); }
 				);
-				// TODO: update metaEditor.model.tags
-				if (metaEditor.model.tags) {
-					debugger;
-				}
+				metaEditor.model.model.tags(lpUtils.asArray(meta.item.tags.tag));
 				metaEditor.model.preload.defer.resolve();
 				metaEditor.model.meta(meta.item);
 			}).fail(function() {
