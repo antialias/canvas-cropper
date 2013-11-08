@@ -112,6 +112,7 @@ define([
 				path: "/content/" + newItemId + "/meta",
 				dataType: 'text-eaten-json'
 			}).done(function (meta) {
+				metaEditor.model.meta(meta.item);
 				if ("pending" === itemIdHasBeenSet.state()) {
 					itemIdHasBeenSet.resolve();
 				}
@@ -121,7 +122,6 @@ define([
 				);
 				metaEditor.model.model.tags(lpUtils.asArray(meta.item.tags.tag));
 				metaEditor.model.preload.defer.resolve();
-				metaEditor.model.meta(meta.item);
 			}).fail(function() {
 				console.error(arguments);
 			});
