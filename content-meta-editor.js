@@ -58,12 +58,13 @@ define([
 			unlisted:ko.observable($("#unlisted").prop('checked')),
 			handlers: {
 				close: function (a,b) {
-					metaEditor.$categoryChooser.dialog("close");
+					metaEditor.$newPage.hide();
+					metaEditor.$mainPage.show();
 				},
 				submitCategories: function (model, event) {
 					var ourSubmit = submitCount;
 					if ("pending" === itemIdHasBeenSet.state()) {
-						metaEditor.$categoryChooser.dialog("close");
+						metaEditor.model.handlers.close();
 					}
 					itemIdHasBeenSet.done(function () {
 						var didDefer = ourSubmit !== submitCount;
@@ -74,7 +75,7 @@ define([
 							dataType: "text-eaten-json",
 							success: function(actionResponse) {
 								if (!didDefer) {
-									metaEditor.$categoryChooser.dialog("close");
+									metaEditor.model.handlers.close();
 								}
 							},
 							contentType: "application/xml",
@@ -126,19 +127,14 @@ define([
 				console.error(arguments);
 			});
 		});
+		this.$newPage = $('<div>').addClass('page');
+		this.$mainPage = $('body .page');
 		this.prepareToShow = dMemo(function (D) {
 			gotMarkup().done(function (markup) {
 				if (!metaEditor.$categoryChooser) {
 					metaEditor.$categoryChooser = $("<div>").html(markup);
-					$(document.body).append(metaEditor.$categoryChooser);
+					metaEditor.$newPage.hide().insertBefore(metaEditor.$mainPage).append(metaEditor.$categoryChooser);
 					metaEditor.model.applyTemplate(metaEditor.$categoryChooser.get(0));
-					metaEditor.$categoryChooser.dialog({
-						position: {my: "top+1", at: "top", of: "body .page", collission: "none"},
-						appendTo: "body .page",
-						autoOpen: false,
-						width: "100%",
-						modal: true
-					});
 					D.resolve();
 				}
 			}).fail(function () {D.reject();});
@@ -154,7 +150,8 @@ define([
 			metaEditor.model.userMessage(args.userMessage);
 			metaEditor.model.userMessageSubtext(args.userMessageSubtext);
 			window.scrollTo(0,0);
-			metaEditor.$categoryChooser.dialog("open");
+			metaEditor.$mainPage.hide();
+			metaEditor.$newPage.show();
 		});
 	};
 	var metaEditorCache = {};
