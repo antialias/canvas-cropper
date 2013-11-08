@@ -132,7 +132,7 @@ define([
 		this.prepareToShow = dMemo(function (D) {
 			gotMarkup().done(function (markup) {
 				if (!metaEditor.$categoryChooser) {
-					metaEditor.$categoryChooser = $("<div>").html(markup);
+					metaEditor.$categoryChooser = $("<div style='display:none;' data-bind='visible:true'>").html(markup);
 					metaEditor.$newPage.hide().insertBefore(metaEditor.$mainPage).append(metaEditor.$categoryChooser);
 					metaEditor.model.applyTemplate(metaEditor.$categoryChooser.get(0));
 					D.resolve();
