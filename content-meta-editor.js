@@ -142,8 +142,8 @@ define([
 	};
 	ContentMetaEditor.prototype.show = function(_args) {
 		var args = $.extend({
-			userMessage: "Categorize your content",
-			userMessageSubtext: ""
+			userMessage: undefined,
+			userMessageSubtext: undefined
 		}, _args);
 		var metaEditor = this;
 		metaEditor.prepareToShow().done(function () {
