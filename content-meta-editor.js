@@ -115,7 +115,10 @@ define([
 				if ("pending" === itemIdHasBeenSet.state()) {
 					itemIdHasBeenSet.resolve();
 				}
-				metaEditor.model.preload.selectedCategoryIds = $.map(lpUtils.asArray(meta.item.categories.category), function (n) {return parseInt(n);});
+				metaEditor.model.preload.selectedCategoryIds = $.map(
+					lpUtils.asArray(meta.item.categories.category),
+					function (n) { return window.parseInt(n, 10); }
+				);
 				// TODO: update metaEditor.model.tags
 				if (metaEditor.model.tags) {
 					debugger;
