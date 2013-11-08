@@ -127,8 +127,8 @@ define([
 				console.error(arguments);
 			});
 		});
-		this.$newPage = $('<div>').addClass('page');
-		this.$mainPage = $('body .page');
+		this.$newPage = $('<div>').addClass('page').addClass('content-meta-editor');
+		this.$mainPage = $('body .page:not(.content-meta-editor)');
 		this.prepareToShow = dMemo(function (D) {
 			gotMarkup().done(function (markup) {
 				if (!metaEditor.$categoryChooser) {
