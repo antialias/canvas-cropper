@@ -75,6 +75,7 @@ _, __) {
 	});
 	var ImageCropper = function (_options) {
 		var options = $.extend({
+			autoOpen: false,
 			$dialog: undefined, // the element where our canvas, slider, and file chooser are
 			chooseImageSelector: undefined, // selector for element inside $dialog that is the file chooser
 			zoomerSelector: undefined, // selector for element that will be turned into our zoomer control
@@ -334,7 +335,7 @@ _, __) {
 			modal: true,
 			height: 512,
 			width: 460,
-			autoOpen: false
+			autoOpen: options.autoOpen
 		});
 		$editorCanvas.each(function () {
 			$(this).attr({
