@@ -30,6 +30,7 @@
 	<script type='application/javascript'>
 	require(['knockout','image-cropper'], function (ko, imageCropper) {
 		var imageCropper = new imageCropper({
+			autoOpen: true,
 			save: $.proxy(window.open,window),
 			$dialog: $(".image-cropper"),
 			chooseImageSelector: '.choose-profile-image-file',
