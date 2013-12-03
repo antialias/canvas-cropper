@@ -1,13 +1,10 @@
 define([
 	'knockout',
-	'/js/pod.menubar.js',
-	'/js/jquery-plugins/jquery.naturalImageSizes.js',
 	'/js/jquery-plugins/jquery.pointerlock.js',
 	'/js/ko-bindings/ko.file.js'
 ], function (
 	ko,
-	menubar,
-_, __, ___) {
+_, __) {
 	var parseDataURI = function (dataURI) {
 		var data = {};
 		var splitURI = dataURI.split(",")
