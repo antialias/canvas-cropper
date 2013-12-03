@@ -332,8 +332,8 @@ _, __) {
 		options.$dialog.dialog({
 			hide: {effect: 'fade', duration: 200},
 			modal: true,
-			height: 412,
-			width: 360,
+			height: 512,
+			width: 460,
 			autoOpen: false
 		});
 		$editorCanvas.each(function () {
