@@ -1,0 +1,42 @@
+<html>
+	<head>
+		<link rel='stylesheet' type='text/css' href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css' >
+		<link rel='stylesheet' type='text/css' href='styles.css' >
+	</head>
+<body>
+	<div class='image-cropper' >
+		<h2>Position and Size Your Image</h2>
+		<div class='profile-image-canvas' data-bind='css: {nopan: preview() || undefined === maxZoom() || profileZoom() <= minZoom()}'>
+			<canvas id='profilePicEditor' data-bind='draw: drawProfileImage'></canvas>
+		</div>
+		<div id='profile-image-zoomer' data-bind='visible: profileImageFile, visible: maxZoom() > minZoom()'></div>
+		<input class='choose-profile-image-file' type='file' data-bind='file:profileImageFile, fileObjectURL: profileImageURI' >
+		<span data-bind='visible: profileImageURI, event: {mouseover: function () {preview(true);}, mouseout: function () {preview(false);}, click: handlers.saveProfilePicture}' class='save-image-button highlighted-action-button action-button'>save image</span>
+	</div>
+	<script type='application/javascript'  src='http://requirejs.org/docs/release/2.1.9/minified/require.js'></script>
+	<script type='application/javascript' >
+	require.config({
+		paths: {
+			"jquery": "http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js",
+			"jquery.pointerlock": "https://raw.github.com/antialias/jquery.pointerlock.js/master/jquery.pointerlock",
+			"ko.file": 'https://raw.github.com/antialias/trh-knockout-bindings/master/ko.file',
+			"image-cropper": "image-cropper",
+			"knockout": "http://knockoutjs.com/downloads/knockout-3.0.0",
+		}
+	});
+	</script>
+	<script type='application/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>
+	<script type='application/javascript' src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js'></script>
+	<script type='application/javascript'>
+	require(['knockout','image-cropper'], function (ko, imageCropper) {
+		var imageCropper = new imageCropper({
+			save: $.proxy(window.open,window),
+			$dialog: $(".image-cropper"),
+			chooseImageSelector: '.choose-profile-image-file',
+			zoomerSelector: "#profile-image-zoomer",
+			editorCanvasSelector: "#profilePicEditor"
+		});
+	});
+	</script>
+</body>
+</html>
