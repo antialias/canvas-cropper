@@ -1,15 +1,53 @@
 define([
 	'knockout',
-	'/js/lp/lib/utils.js',
 	'/js/pod.menubar.js',
 	'/js/jquery-plugins/jquery.naturalImageSizes.js',
 	'/js/jquery-plugins/jquery.pointerlock.js',
 	'/js/ko-bindings/ko.file.js'
 ], function (
 	ko,
-	lpUtils,
 	menubar,
 _, __, ___) {
+	var parseDataURI = function (dataURI) {
+		var data = {};
+		var splitURI = dataURI.split(",")
+		data.data = splitURI[1];
+		data.contentType = splitURI[0].split(":")[1].split(";")[0];
+		data.encodingScheme = splitURI[0].split(":")[1].split(";")[1];
+		return data;
+	};
+	var dataURItoBlob = function (dataURI, blobPropertyBag) { // lifted from http://stackoverflow.com/a/11954337/689203
+	    var binary = atob(parseDataURI(dataURI).data);
+	    var array = [];
+	    for(var i = 0; i < binary.length; i++) {
+	        array.push(binary.charCodeAt(i));
+	    }
+	    return new Blob([new Uint8Array(array)], blobPropertyBag);
+	};
+	(function($){
+		// code in this block was lifted from http://www.jacklmoore.com/notes/naturalwidth-and-naturalheight-in-ie/
+		var props = ['Width', 'Height'],
+			prop;
+		while (prop = props.pop()) {
+			(function (natural, prop) {
+				$.fn[natural] = (natural in new Image()) ? 
+				function () {
+					return this[0][natural];
+				} : 
+				function () {
+					var node = this[0],
+						img,
+						value;
+					if (node.tagName.toLowerCase() === 'img') {
+						img = new Image();
+						img.src = node.src,
+						value = img[prop];
+					}
+					return value;
+				};
+			}('natural' + prop, prop.toLowerCase()));
+		}
+	}(jQuery));
 	$.widget( "ui.lpslider", $.ui.slider, {
 		_refresh: function () {
 			var sliderObj = this;
@@ -124,7 +162,7 @@ _, __, ___) {
 		this.imageAsBlob = function () {
 			var imageType = 'image/png';
 			var imageURL = imageCropper.croppedImageDataUrl(imageType);
-			var imageBlob = lpUtils.dataURItoBlob(imageURL, {type: imageType});
+			var imageBlob = dataURItoBlob(imageURL, {type: imageType});
 			return imageBlob;
 		};
 		profileImageEditor.profileZoomExp = ko.computed(function () {
