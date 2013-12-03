@@ -1,7 +1,7 @@
 define([
 	'knockout',
-	'/js/jquery-plugins/jquery.pointerlock.js',
-	'/js/ko-bindings/ko.file.js'
+	'jquery.pointerlock',
+	'ko.file'
 ], function (
 	ko,
 _, __) {
